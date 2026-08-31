@@ -117,10 +117,8 @@ type ApplyResult struct {
 	//   - "Degraded"    — transient failure, will retry
 	Conditions []v1alpha1.Condition
 
-	// RuntimeMetadata carries adapter-internal state to persist
-	// into Deployment.Metadata.Annotations (keyed under
-	// runtimes.agentregistry.solo.io/<type>/*). Callers marshal
-	// to string values since Annotations is map[string]string.
+	// RuntimeMetadata carries provider state persisted in
+	// Deployment.Status.Details.runtimeMetadata.
 	RuntimeMetadata map[string]string
 
 	// Details is a map of top-level keys to JSON-encoded values to merge into

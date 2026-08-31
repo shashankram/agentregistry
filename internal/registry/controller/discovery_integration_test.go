@@ -300,13 +300,9 @@ func TestDeploymentDiscoveryController_DedupesManagedDeploymentRemoteID(t *testi
 	stores := newControllerTestStores(t)
 	seedAgentDeployment(t, stores, "managed-agent", "managed-agent", v1alpha1.DesiredStateDeployed)
 	managed := loadDeployment(t, stores, "managed-agent")
-	require.NoError(t, stores[v1alpha1.KindDeployment].PatchAnnotations(ctx, "default", managed.Metadata.Name, "", func(annotations map[string]string) map[string]string {
-		if annotations == nil {
-			annotations = map[string]string{}
-		}
-		annotations["runtimes.agentregistry.solo.io/test/"+types.RuntimeMetadataRemoteIDKey] = "agent-123"
-		return annotations
-	}))
+	require.NoError(t, stores[v1alpha1.KindDeployment].PatchStatus(ctx, "default", managed.Metadata.Name, "", v1alpha1.StatusPatcher(func(status *v1alpha1.Status) {
+		_ = status.SetDetailsKey(deploymentRuntimeDetailsKey, map[string]string{types.RuntimeMetadataRemoteIDKey: "agent-123"})
+	})))
 	source := &discoveryTestAdapter{results: []types.DiscoveryResult{{
 		TargetKind:      v1alpha1.KindAgent,
 		Name:            "provider-name",
